@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import LeagueManager from './components/LeagueManager';
 import MatchEntryForm from './components/MatchEntryForm';
 import LeagueTable from './components/LeagueTable';
+import MatchHistory from './components/MatchHistory';
+import HeadToHeadTable from './components/HeadToHeadTable';
 import ApiService from './services/api';
 import './App.css';
 
@@ -15,6 +17,8 @@ function App() {
   // State for loading and error handling
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showMatchHistory, setShowMatchHistory] = useState(false);
+  const [showHeadToHead, setShowHeadToHead] = useState(false);
 
   // Get the current league object
   const currentLeague = leagues.find(league => league._id === currentLeagueId);
@@ -146,6 +150,24 @@ function App() {
               leagueName={currentLeague.name}
               leagueStatus={currentLeague.status}
             />
+            
+            {/* Head-to-Head Table */}
+            <HeadToHeadTable league={currentLeague} />
+            
+            {/* Match History Button */}
+            <div className="history-buttons">
+              <button 
+                className="history-btn"
+                onClick={() => setShowMatchHistory(!showMatchHistory)}
+              >
+                {showMatchHistory ? '📜 Hide Match History' : '📜 Show Match History'}
+              </button>
+            </div>
+            
+            {/* Match History Component */}
+            {showMatchHistory && (
+              <MatchHistory leagues={leagues} />
+            )}
           </>
         )}
         
