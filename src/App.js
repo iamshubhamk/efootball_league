@@ -23,6 +23,9 @@ function App() {
   // Get the current league object
   const currentLeague = leagues.find(league => league._id === currentLeagueId);
 
+  console.log('Current league:', currentLeague); // Debug log
+  console.log('Show match history:', showMatchHistory); // Debug log
+
   // Load leagues on component mount
   useEffect(() => {
     loadLeagues();
@@ -33,11 +36,52 @@ function App() {
     try {
       setLoading(true);
       const data = await ApiService.getLeagues();
+      console.log('Loaded leagues:', data); // Debug log
       setLeagues(data);
       setError(null);
     } catch (err) {
-      setError('Failed to load leagues. Please check your connection.');
       console.error('Error loading leagues:', err);
+      setError('Failed to load leagues. Please check your connection.');
+      
+      // Add test data for development
+      const testLeagues = [
+        {
+          _id: 'test1',
+          name: 'Test League 1',
+          status: 'active',
+          matches: [
+            { player1: 'Jassi', player2: 'Lezter', goals1: 3, goals2: 1, date: new Date() },
+            { player1: 'Lezter', player2: 'Kumar', goals1: 2, goals2: 2, date: new Date() },
+            { player1: 'Kumar', player2: 'Jassi', goals1: 1, goals2: 4, date: new Date() }
+          ],
+          playerStats: {
+            Jassi: { matches: 2, wins: 1, draws: 0, losses: 1, goalsFor: 7, goalsAgainst: 2, form: ['W', 'L'] },
+            Lezter: { matches: 2, wins: 0, draws: 1, losses: 1, goalsFor: 3, goalsAgainst: 5, form: ['D', 'L'] },
+            Kumar: { matches: 2, wins: 0, draws: 1, losses: 1, goalsFor: 3, goalsAgainst: 6, form: ['D', 'L'] }
+          },
+          createdAt: new Date(),
+          endedAt: null
+        },
+        {
+          _id: 'test2',
+          name: 'Test League 2',
+          status: 'ended',
+          matches: [
+            { player1: 'Jassi', player2: 'Lezter', goals1: 2, goals2: 0, date: new Date() },
+            { player1: 'Lezter', player2: 'Kumar', goals1: 1, goals2: 1, date: new Date() },
+            { player1: 'Kumar', player2: 'Jassi', goals1: 0, goals2: 3, date: new Date() }
+          ],
+          playerStats: {
+            Jassi: { matches: 2, wins: 2, draws: 0, losses: 0, goalsFor: 5, goalsAgainst: 0, form: ['W', 'W'] },
+            Lezter: { matches: 2, wins: 0, draws: 1, losses: 1, goalsFor: 1, goalsAgainst: 3, form: ['L', 'D'] },
+            Kumar: { matches: 2, wins: 0, draws: 1, losses: 1, goalsFor: 1, goalsAgainst: 4, form: ['D', 'L'] }
+          },
+          createdAt: new Date(),
+          endedAt: new Date()
+        }
+      ];
+      setLeagues(testLeagues);
+      setCurrentLeagueId('test1'); // Auto-select first test league
     } finally {
       setLoading(false);
     }
@@ -60,6 +104,7 @@ function App() {
 
   // Function to select a league
   const selectLeague = (leagueId) => {
+    console.log('Selecting league:', leagueId); // Debug log
     setCurrentLeagueId(leagueId);
   };
 
@@ -82,6 +127,7 @@ function App() {
   // Function to delete a league
   const deleteLeague = async (leagueId) => {
     try {
+      console.log('Deleting league:', leagueId); // Debug log
       await ApiService.deleteLeague(leagueId);
       setLeagues(prevLeagues => 
         prevLeagues.filter(league => league._id !== leagueId)
