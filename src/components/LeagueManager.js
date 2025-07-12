@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 
-const LeagueManager = ({ leagues, currentLeagueId, currentLeague, onCreateLeague, onSelectLeague, onEndLeague }) => {
+const LeagueManager = ({ leagues, currentLeagueId, currentLeague, onCreateLeague, onSelectLeague, onEndLeague, onDeleteLeague }) => {
   const [newLeagueName, setNewLeagueName] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [leagueToEnd, setLeagueToEnd] = useState(null);
   const [confirmStep, setConfirmStep] = useState(1); // 1 for first confirmation, 2 for second
+  const [leagueToDelete, setLeagueToDelete] = useState(null);
+  const [deleteConfirmStep, setDeleteConfirmStep] = useState(1); // 1 for first confirmation, 2 for second, 3 for third
   const [showStatsModal, setShowStatsModal] = useState(false);
 
   // Handle creating a new league
@@ -39,6 +41,35 @@ const LeagueManager = ({ leagues, currentLeagueId, currentLeague, onCreateLeague
   const cancelEndLeague = () => {
     setLeagueToEnd(null);
     setConfirmStep(1);
+  };
+
+  // Handle deleting a league with triple confirmation
+  const handleDeleteLeague = (league) => {
+    setLeagueToDelete(league);
+    setDeleteConfirmStep(1);
+  };
+
+  // First confirmation for delete
+  const confirmDeleteLeague = () => {
+    setDeleteConfirmStep(2);
+  };
+
+  // Second confirmation for delete
+  const confirmDeleteLeague2 = () => {
+    setDeleteConfirmStep(3);
+  };
+
+  // Third confirmation - actually delete the league
+  const finalConfirmDeleteLeague = () => {
+    onDeleteLeague(leagueToDelete._id);
+    setLeagueToDelete(null);
+    setDeleteConfirmStep(1);
+  };
+
+  // Cancel deleting league
+  const cancelDeleteLeague = () => {
+    setLeagueToDelete(null);
+    setDeleteConfirmStep(1);
   };
 
   // Format date for display
@@ -169,6 +200,15 @@ const LeagueManager = ({ leagues, currentLeagueId, currentLeague, onCreateLeague
                 onClick={() => handleEndLeague(currentLeague)}
               >
                 End League
+              </button>
+            )}
+            
+            {currentLeague && (
+              <button 
+                className="delete-league-btn"
+                onClick={() => handleDeleteLeague(currentLeague)}
+              >
+                Delete League
               </button>
             )}
           </div>
@@ -369,6 +409,86 @@ const LeagueManager = ({ leagues, currentLeagueId, currentLeague, onCreateLeague
                 Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete League Confirmation Modal */}
+      {leagueToDelete && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>🗑️ Delete League Confirmation</h3>
+            
+            {deleteConfirmStep === 1 ? (
+              <>
+                <p>
+                  Are you sure you want to delete the league <strong>"{leagueToDelete.name}"</strong>?
+                </p>
+                <p className="warning">
+                  ⚠️ This action will permanently delete ALL data including matches, statistics, and player records.
+                </p>
+                <div className="modal-actions">
+                  <button 
+                    className="confirm-btn"
+                    onClick={confirmDeleteLeague}
+                  >
+                    Yes, I want to delete this league
+                  </button>
+                  <button 
+                    className="cancel-btn"
+                    onClick={cancelDeleteLeague}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            ) : deleteConfirmStep === 2 ? (
+              <>
+                <p>
+                  <strong>Second Confirmation:</strong> You are about to delete <strong>"{leagueToDelete.name}"</strong>.
+                </p>
+                <p className="warning">
+                  ⚠️ This will permanently remove {leagueToDelete.matches.length} matches and all player statistics.
+                </p>
+                <div className="modal-actions">
+                  <button 
+                    className="confirm-btn"
+                    onClick={confirmDeleteLeague2}
+                  >
+                    Yes, I understand the consequences
+                  </button>
+                  <button 
+                    className="cancel-btn"
+                    onClick={cancelDeleteLeague}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p>
+                  <strong>FINAL WARNING:</strong> You are about to permanently delete <strong>"{leagueToDelete.name}"</strong>.
+                </p>
+                <p className="warning">
+                  ⚠️ This is your LAST chance to cancel. After this, the league and ALL its data will be gone forever.
+                </p>
+                <div className="modal-actions">
+                  <button 
+                    className="confirm-btn danger"
+                    onClick={finalConfirmDeleteLeague}
+                  >
+                    Yes, delete the league permanently
+                  </button>
+                  <button 
+                    className="cancel-btn"
+                    onClick={cancelDeleteLeague}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

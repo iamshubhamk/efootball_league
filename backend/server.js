@@ -195,6 +195,22 @@ app.put('/api/leagues/:id/end', async (req, res) => {
   }
 });
 
+// Delete a league
+app.delete('/api/leagues/:id', async (req, res) => {
+  try {
+    const league = await League.findById(req.params.id);
+    
+    if (!league) {
+      return res.status(404).json({ message: 'League not found' });
+    }
+    
+    await League.findByIdAndDelete(req.params.id);
+    res.json({ message: 'League deleted successfully' });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'eFootball League API is running' });

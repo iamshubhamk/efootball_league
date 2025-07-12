@@ -75,6 +75,26 @@ function App() {
     }
   };
 
+  // Function to delete a league
+  const deleteLeague = async (leagueId) => {
+    try {
+      await ApiService.deleteLeague(leagueId);
+      setLeagues(prevLeagues => 
+        prevLeagues.filter(league => league._id !== leagueId)
+      );
+      
+      // If the deleted league was selected, clear selection
+      if (currentLeagueId === leagueId) {
+        setCurrentLeagueId(null);
+      }
+      
+      setError(null);
+    } catch (err) {
+      setError('Failed to delete league. Please try again.');
+      console.error('Error deleting league:', err);
+    }
+  };
+
   // Function to add a new match to the current league
   const addMatch = async (matchData) => {
     if (!currentLeague || currentLeague.status === 'ended') {
@@ -112,6 +132,7 @@ function App() {
           onCreateLeague={createLeague}
           onSelectLeague={selectLeague}
           onEndLeague={endLeague}
+          onDeleteLeague={deleteLeague}
         />
         
         {currentLeague && (

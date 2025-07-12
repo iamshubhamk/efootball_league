@@ -446,6 +446,22 @@ body {
   background-color: #c0392b;
 }
 
+.delete-league-btn {
+  background-color: #e74c3c;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-left: 10px;
+}
+
+.delete-league-btn:hover {
+  background-color: #c0392b;
+}
+
 /* Modal Styles */
 .modal-overlay {
   position: fixed;

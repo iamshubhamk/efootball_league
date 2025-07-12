@@ -78,6 +78,23 @@ class ApiService {
     }
   }
 
+  // Delete a league
+  static async deleteLeague(leagueId) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/leagues/${leagueId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) throw new Error('Failed to delete league');
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting league:', error);
+      throw error;
+    }
+  }
+
   // Health check
   static async healthCheck() {
     try {
